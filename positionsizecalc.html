@@ -1,0 +1,150 @@
+
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Position Size Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8fbff;
+      color: #003366;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    .calculator {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      padding: 30px;
+      width: 100%;
+      max-width: 450px;
+    }
+    .calculator h2 {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cce0ff;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #0056cc;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e6f0ff;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+      color: #003366;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <h2>Position Size Calculator</h2><!-- Position Sizing Inputs -->
+<div class="form-group">
+  <label for="accountSize">Account Size ($)</label>
+  <input type="number" id="accountSize" placeholder="Enter account size">
+</div>
+<div class="form-group">
+  <label for="riskPercent">Risk per Trade (%)</label>
+  <input type="number" id="riskPercent" placeholder="Enter % risk">
+</div>
+<div class="form-group">
+  <label for="stopLoss">Stop Loss per Share ($)</label>
+  <input type="number" id="stopLoss" placeholder="Enter stop loss amount">
+</div>
+<button onclick="calculatePositionSize()">Calculate Position Size</button>
+
+<!-- Profit & Loss Projection Inputs -->
+<h2 style="margin-top:25px;">Profit & Loss Projection</h2>
+<div class="form-group">
+  <label for="entryPrice">Entry Price ($)</label>
+  <input type="number" id="entryPrice" placeholder="Enter entry price">
+</div>
+<div class="form-group">
+  <label for="targetPrice">Target Price ($)</label>
+  <input type="number" id="targetPrice" placeholder="Enter target price">
+</div>
+<button onclick="calculatePnL()">Calculate P&L</button>
+
+<!-- Results -->
+<div class="result" id="result"></div>
+
+  </div>  <script>
+    let lastPositionSize = 0;
+    let lastStopLoss = 0;
+
+    function calculatePositionSize() {
+      const accountSize = parseFloat(document.getElementById('accountSize').value);
+      const riskPercent = parseFloat(document.getElementById('riskPercent').value);
+      const stopLoss = parseFloat(document.getElementById('stopLoss').value);
+
+      if (isNaN(accountSize) || isNaN(riskPercent) || isNaN(stopLoss) || accountSize<=0 || riskPercent<=0 || stopLoss<=0) {
+        document.getElementById('result').innerText = "⚠️ Please enter valid numbers.";
+        return;
+      }
+
+      const riskAmount = (accountSize * (riskPercent/100));
+      const positionSize = Math.floor(riskAmount / stopLoss);
+      lastPositionSize = positionSize;
+      lastStopLoss = stopLoss;
+
+      document.getElementById('result').innerText = `✅ Optimal Position Size: ${positionSize} shares`;
+    }
+
+    function calculatePnL() {
+      const entryPrice = parseFloat(document.getElementById('entryPrice').value);
+      const targetPrice = parseFloat(document.getElementById('targetPrice').value);
+
+      if (lastPositionSize === 0) {
+        document.getElementById('result').innerText = "⚠️ Please calculate position size first.";
+        return;
+      }
+
+      if (isNaN(entryPrice) || isNaN(targetPrice) || entryPrice<=0 || targetPrice<=0) {
+        document.getElementById('result').innerText = "⚠️ Please enter valid entry and target prices.";
+        return;
+      }
+
+      const profitPerShare = targetPrice - entryPrice;
+      const totalProfit = profitPerShare * lastPositionSize;
+      const totalLoss = lastStopLoss * lastPositionSize;
+
+      document.getElementById('result').innerText = `📊 Position Size: ${lastPositionSize} shares\n💰 Potential Profit: $${totalProfit.toFixed(2)}\n⚠️ Potential Loss: -$${totalLoss.toFixed(2)}`;
+    }
+  </script></body>
+  </html>
