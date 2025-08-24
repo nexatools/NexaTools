@@ -1185,6 +1185,124 @@
                 document.getElementById('searchResults').style.display = 'none';
             }
         });
+    </script><script>
+    // Mobile menu toggle functionality
+    document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+        const nav = document.querySelector('nav');
+        nav.style.display = nav.style.display === 'block' ? 'none' : 'block';
+    });
+
+    const searchInput = document.getElementById('searchInput');
+    const resultsContainer = document.getElementById('searchResults');
+    const resultsList = document.getElementById('resultsList');
+    let currentFocus = -1; // Track highlighted search result
+    
+    // Live search
+    searchInput.addEventListener('input', function() {
+        performSearch();
+    });
+
+    // Keyboard navigation for results
+    searchInput.addEventListener('keydown', function(e) {
+        const items = resultsList.getElementsByTagName('li');
+        if (!items.length) return;
+
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            currentFocus = (currentFocus + 1) % items.length;
+            setActive(items);
+        } 
+        else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            currentFocus = (currentFocus - 1 + items.length) % items.length;
+            setActive(items);
+        } 
+        else if (e.key === "Enter") {
+            e.preventDefault();
+            if (currentFocus > -1) {
+                const link = items[currentFocus].querySelector('a');
+                if (link) link.click();
+            }
+        }
+    });
+
+    function setActive(items) {
+        for (let i = 0; i < items.length; i++) {
+            items[i].classList.remove("active-result");
+        }
+        if (currentFocus >= 0) {
+            items[currentFocus].classList.add("active-result");
+        }
+    }
+
+    function performSearch() {
+        const searchTerm = searchInput.value.toLowerCase();
+        resultsList.innerHTML = '';
+        currentFocus = -1;
+
+        if (searchTerm.trim() === '') {
+            resultsContainer.classList.remove('show');
+            return;
+        }
+
+        const toolCards = document.querySelectorAll('.tool-card');
+        let foundResults = false;
+
+        toolCards.forEach((card, index) => {
+            const toolName = card.querySelector('h3').textContent.toLowerCase();
+            const toolDesc = card.querySelector('p').textContent.toLowerCase();
+
+            if (toolName.includes(searchTerm) || toolDesc.includes(searchTerm)) {
+                foundResults = true;
+                const listItem = document.createElement('li');
+                const link = document.createElement('a');
+
+                if (!card.id) card.id = "tool-" + index;
+
+                link.href = "#" + card.id;
+                link.textContent = card.querySelector('h3').textContent;
+
+                link.onclick = function(e) {
+                    e.preventDefault();
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    card.style.boxShadow = '0 0 0 3px var(--primary-blue)';
+                    setTimeout(() => {
+                        card.style.boxShadow = 'var(--shadow)';
+                    }, 2000);
+
+                    // ✅ Clear search box & close results
+                    searchInput.value = '';
+                    resultsContainer.classList.remove('show');
+                };
+
+                listItem.appendChild(link);
+                resultsList.appendChild(listItem);
+            }
+        });
+
+        if (foundResults) {
+            resultsContainer.classList.add('show');
+            // ✅ Auto-select first result
+            const items = resultsList.getElementsByTagName('li');
+            if (items.length > 0) {
+                currentFocus = 0;
+                setActive(items);
+            }
+        } else {
+            const listItem = document.createElement('li');
+            listItem.textContent = 'No tools found matching your search.';
+            resultsList.appendChild(listItem);
+            resultsContainer.classList.add('show');
+        }
+    }
+
+    // Close search results when clicking outside
+    document.addEventListener('click', function(event) {
+        const searchContainer = document.querySelector('.search-container');
+        if (!searchContainer.contains(event.target)) {
+            resultsContainer.classList.remove('show');
+        }
+    });
     </script>
 </body>
 </html>
