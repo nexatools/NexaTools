@@ -61,7 +61,8 @@ input[type="url"]:focus { border-color: var(--primary); box-shadow: 0 0 0 4px va
   background: #f8fbff; border: 1px solid #e6eef9; border-radius: 14px; padding: 12px; font-size: 0.95rem;
   display: flex; flex-direction: column; gap: 10px; word-break: break-all;
 }
-.output-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.output-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+#qrcode { margin-top: 10px; }
 
 footer { text-align: center; color: var(--muted); font-size: 0.9rem; padding: 12px 8px 30px; }
 
@@ -74,7 +75,7 @@ footer { text-align: center; color: var(--muted); font-size: 0.9rem; padding: 12
         <div class="logo" aria-hidden="true"></div>
         <div>
           <h1>NexaTools — Tiny URL</h1>
-          <div class="sub">Enter a long URL → Get a short one → Copy or Download</div>
+          <div class="sub">Enter a long URL → Get a short one → Copy, Download or Scan</div>
         </div>
       </div>
     </header><section class="card">
@@ -91,7 +92,9 @@ footer { text-align: center; color: var(--muted); font-size: 0.9rem; padding: 12
       <a id="shortUrl" href="#" target="_blank"></a>
       <div class="output-actions">
         <button class="btn btn-primary" id="copyBtn">Copy</button>
+        <button class="btn btn-outline" id="downloadQrBtn">Download QR</button>
       </div>
+      <div id="qrcode"></div>
     </div>
   </div>
 </section>
@@ -99,15 +102,20 @@ footer { text-align: center; color: var(--muted); font-size: 0.9rem; padding: 12
 <footer>© <span id="year"></span> NexaTools — Tiny URL</footer>
 
   </div>  <script>
+    // Embedded QRCode.js library
+    !function(o){function n(o){this.mode=s.MODE_8BIT_BYTE,this.data=o}function t(o,n){this.typeNumber=o,this.errorCorrectLevel=n,this.modules=null,this.moduleCount=0,this.dataCache=null,this.dataList=[]}function e(o,n){if(void 0==o.length)throw new Error(o.length+"/"+n);for(var t=0;t<o.length&&0==o[t];)t++;this.num=new Array(o.length-t+n);for(var e=0;e<o.length-t;e++)this.num[e]=o[e+t]}function r(o,n){this.totalCount=o,this.dataCount=n}function i(){this.buffer=[],this.length=0}function u(){return"undefined"!=typeof CanvasRenderingContext2D}function f(){var o=!1,n=navigator.userAgent;return/Android/i.test(n)&&(o=!0,parseFloat(n.match(/Android\s([0-9\.]+)/)[1])<2.1&&(o=!1)),o}function d(o,n){for(var t=1,e=h(o);e>n;)t++,o=h(o),e=h(o);return o}function h(o){return 17+4*o}var s={};n.prototype={getLength:function(o){return this.data.length},write:function(o){for(var n=0;n<this.data.length;n++)o.put(this.data.charCodeAt(n),8)}};var a={PATTERN_POSITION_TABLE:[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46]],G15:1335,G18:7973,G15_MASK:21522,getBCHTypeInfo:function(o){for(var n=o<<10;a.getBCHDigit(n)-a.getBCHDigit(a.G15)>=0;)n^=a.G15<<a.getBCHDigit(n)-a.getBCHDigit(a.G15);return(o<<10|n)^a.G15_MASK},getBCHDigit:function(o){for(var n=0;0!=o;)n++,o>>>=1;return n}};t.prototype={addData:function(o){this.dataList.push(new n(o)),this.dataCache=null},isDark:function(o,n){if(0>o||this.moduleCount<=o||0>n||this.moduleCount<=n)throw new Error(o+","+n);return this.modules[o][n]},getModuleCount:function(){return this.moduleCount},make:function(){this.makeImpl(!1,this.getBestMaskPattern())},makeImpl:function(o,n){this.moduleCount=4*this.typeNumber+17,this.modules=new Array(this.moduleCount);for(var t=0;t<this.moduleCount;t++){this.modules[t]=new Array(this.moduleCount);for(var e=0;e<this.moduleCount;e++)this.modules[t][e]=null}this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.setupTimingPattern(),this.setupTypeInfo(o,n),this.mapData(this.createData(this.typeNumber,this.errorCorrectLevel),n)},setupPositionProbePattern:function(o,n){for(var t=-1;7>=t;t++)if(!(0>o+t||this.moduleCount<=o+t))for(var e=-1;7>=e;e++)0>n+e||this.moduleCount<=n+e||(0<=t&&t<=6&&0<=e&&e<=6&&(0==t||6==t||0==e||6==e||t>=2&&4>=t&&e>=2&&4>=e)?this.modules[o+t][n+e]=!0:this.modules[o+t][n+e]=!1)},setupTimingPattern:function(){for(var o=8;o<this.moduleCount-8;o++)null==this.modules[o][6]&&(this.modules[o][6]=o%2==0),null==this.modules[6][o]&&(this.modules[6][o]=o%2==0)},setupTypeInfo:function(o,n){for(var t=a.getBCHTypeInfo(this.errorCorrectLevel<<3|n),e=0;15>e;e++){var r=!o&&1==(t>>e&1);e<6?this.modules[e][8]=r:8==e?this.modules[7][8]=r:e<8?this.modules[e+1][8]=r:this.modules[this.moduleCount-15+e][8]=r}for(var e=0;15>e;e++){var r=!o&&1==(t>>e&1);e<8?this.modules[8][this.moduleCount-e-1]=r:e<9?this.modules[8][15-e-1+1]=r:this.modules[8][15-e-1]=r}},mapData:function(o,n){for(var t=-1,e=this.moduleCount-1,r=7,i=0,u=this.moduleCount-1;u>0;u-=2)for(6==u&&u--;;){for(var f=0;2>f;f++)if(null==this.modules[e][u-f]){var d=!1;i<o.length&&(d=1==(o[i]>>>r&1));var h=a.getMask(n,e,u-f);this.modules[e][u-f]=d^h}if(r--,0>r){i++;if(i>=o.length)break;r=7}e+=t,0>e||this.moduleCount<=e&&(e-=t,t=-t)}}},r.getRSBlocks=function(o,n){var t=r.getRsBlockTable(o,n);if(void 0==t)throw new Error("bad rs block @ typeNumber:"+o+"/errorCorrectLevel:"+n);for(var e=[],i=0;i<t.length/3;i++)for(var u=t[3*i+0],f=t[3*i+1],d=t[3*i+2],h=0;h<u;h++)e.push(new r(f,d));return e},r.getRsBlockTable=function(o,n){switch(n){case 1:return[1,26,19];case 0:return[1,26,16];case 3:return[1,26,13];case 2:return[1,26,9];default:return void 0}};var l={L:1,M:0,Q:3,H:2};window.QRCode=t,window.QRCode.CorrectLevel=l}(this);
+
     const shortenBtn = document.getElementById('shortenBtn');
     const downloadBtn = document.getElementById('downloadBtn');
     const urlInput = document.getElementById('urlInput');
     const output = document.getElementById('output');
     const shortUrl = document.getElementById('shortUrl');
     const copyBtn = document.getElementById('copyBtn');
+    const downloadQrBtn = document.getElementById('downloadQrBtn');
+    const qrCodeContainer = document.getElementById('qrcode');
 
     const fakeShorten = (url) => {
-      const base = 'https://nexatools.to/';
+      const base = 'https://nexatools.store/';
       const hash = btoa(url).replace(/[^a-zA-Z0-9]/g, '').substring(0, 6);
       return base + hash;
     };
@@ -120,6 +128,13 @@ footer { text-align: center; color: var(--muted); font-size: 0.9rem; padding: 12
       shortUrl.textContent = short;
       output.hidden = false;
       downloadBtn.disabled = false;
+
+      // Generate QR Code
+      qrCodeContainer.innerHTML = "";
+      const qr = new QRCode(4, QRCode.CorrectLevel.H);
+      qr.addData(short);
+      qr.make();
+      qrCodeContainer.innerHTML = qr.createImgTag(4);
     });
 
     downloadBtn.addEventListener('click', () => {
@@ -140,6 +155,18 @@ footer { text-align: center; color: var(--muted); font-size: 0.9rem; padding: 12
       });
     });
 
+    downloadQrBtn.addEventListener('click', () => {
+      const img = qrCodeContainer.querySelector('img');
+      if (img) {
+        const link = document.createElement('a');
+        link.href = img.src;
+        link.download = 'qrcode.png';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      }
+    });
+
     document.getElementById('year').textContent = new Date().getFullYear();
   </script></body>
-</html>
+                                                                          </html>
